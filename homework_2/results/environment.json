@@ -1,0 +1,13 @@
+{
+  "python": "3.12.6",
+  "platform": "macOS-15.6-arm64-arm-64bit",
+  "packages": {
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "torch": "2.14.1",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2"
+  }
+}

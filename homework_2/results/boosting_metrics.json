@@ -1,0 +1,100 @@
+{
+  "dset0": {
+    "filename": "dset0.csv",
+    "sha256": "bc6fe805760b5cf1bd6da32ed47b2773e5330679224b8fffb7eecb0021af4519",
+    "rows": 500,
+    "features": 5,
+    "task": "binary classification",
+    "seed": 37711,
+    "train_size": 400,
+    "test_size": 100,
+    "learning_rate": 0.1,
+    "max_depth": 3,
+    "records": [
+      {
+        "trees": 1,
+        "train_loss": 0.6462524479117536,
+        "train_accuracy": 0.58,
+        "test_loss": 0.6732820681138011,
+        "test_accuracy": 0.55
+      },
+      {
+        "trees": 10,
+        "train_loss": 0.4901727029302947,
+        "train_accuracy": 0.8225,
+        "test_loss": 0.588847538610677,
+        "test_accuracy": 0.64
+      },
+      {
+        "trees": 100,
+        "train_loss": 0.12921946078743374,
+        "train_accuracy": 0.995,
+        "test_loss": 0.41932750308094685,
+        "test_accuracy": 0.81
+      },
+      {
+        "trees": 300,
+        "train_loss": 0.023132778245137403,
+        "train_accuracy": 1.0,
+        "test_loss": 0.47430257900388084,
+        "test_accuracy": 0.82
+      },
+      {
+        "trees": 1000,
+        "train_loss": 0.00013814979216192284,
+        "train_accuracy": 1.0,
+        "test_loss": 0.7981053823995232,
+        "test_accuracy": 0.82
+      }
+    ]
+  },
+  "dset1": {
+    "filename": "dset1.csv",
+    "sha256": "cd33ccaaa01e7b770772de2900f8ad627f104432f0d9e101dc402ccf46c32f75",
+    "rows": 500,
+    "features": 5,
+    "task": "binary classification",
+    "seed": 37711,
+    "train_size": 400,
+    "test_size": 100,
+    "learning_rate": 0.1,
+    "max_depth": 3,
+    "records": [
+      {
+        "trees": 1,
+        "train_loss": 0.6397774525026898,
+        "train_accuracy": 0.7575,
+        "test_loss": 0.6551246729683696,
+        "test_accuracy": 0.65
+      },
+      {
+        "trees": 10,
+        "train_loss": 0.40674181148120053,
+        "train_accuracy": 0.8725,
+        "test_loss": 0.4710812172148052,
+        "test_accuracy": 0.8
+      },
+      {
+        "trees": 100,
+        "train_loss": 0.1268969406215481,
+        "train_accuracy": 0.9825,
+        "test_loss": 0.3914149504815839,
+        "test_accuracy": 0.83
+      },
+      {
+        "trees": 300,
+        "train_loss": 0.028171906849321846,
+        "train_accuracy": 1.0,
+        "test_loss": 0.44543177363422615,
+        "test_accuracy": 0.83
+      },
+      {
+        "trees": 1000,
+        "train_loss": 0.00022588205544933238,
+        "train_accuracy": 1.0,
+        "test_loss": 0.8033580139186945,
+        "test_accuracy": 0.78
+      }
+    ]
+  }
+}

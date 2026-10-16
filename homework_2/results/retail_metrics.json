@@ -1,0 +1,97 @@
+{
+  "filename": "retail.csv",
+  "sha256": "5da6724e4ee820f19e1bdb5076fd24355a10f8e75159062824c85f17ea052597",
+  "rows": 397924,
+  "seed": 37711,
+  "cardinality": {
+    "StockCode": 3665,
+    "CustomerID": 4339
+  },
+  "training_cardinality": {
+    "StockCode": 3604,
+    "CustomerID": 4312
+  },
+  "splits": {
+    "train": 278546,
+    "validation": 39792,
+    "test": 79586
+  },
+  "negative_quantity_count": 0,
+  "dense_onehot_float32_gib": 11.734539210796356,
+  "sparse_onehot_nonzeros": 795848,
+  "embedding_dimensions": [
+    16,
+    16
+  ],
+  "target_encoding": "5-fold out-of-fold exact means; train-only evaluation map",
+  "unknown_test_fraction": {
+    "StockCode": 0.0007915965119493378,
+    "CustomerID": 0.0003015605759807001
+  },
+  "models": {
+    "target": {
+      "training": {
+        "best_epoch": 32,
+        "epochs_run": 47,
+        "best_validation_loss": 58.50324249267578,
+        "batch_size": 1024,
+        "learning_rate": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0.0001,
+        "patience": 15
+      },
+      "validation_mse": 139258.95468006734,
+      "test_mse": 83804.84350070124,
+      "test_mae": 8.637458142171845,
+      "test_r2": 0.0072443309539221845
+    },
+    "embedding": {
+      "training": {
+        "best_epoch": 19,
+        "epochs_run": 34,
+        "best_validation_loss": 58.51899337768555,
+        "batch_size": 1024,
+        "learning_rate": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0.0001,
+        "patience": 15
+      },
+      "validation_mse": 139296.41886070615,
+      "test_mse": 83421.677092482,
+      "test_mae": 8.154369887974216,
+      "test_r2": 0.011783336195838823
+    },
+    "combined": {
+      "training": {
+        "best_epoch": 8,
+        "epochs_run": 23,
+        "best_validation_loss": 58.49826431274414,
+        "batch_size": 1024,
+        "learning_rate": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0.0001,
+        "patience": 15
+      },
+      "validation_mse": 139247.1468877702,
+      "test_mse": 83666.01966977975,
+      "test_mae": 8.566308967634525,
+      "test_r2": 0.008888843841114213
+    }
+  },
+  "mean_baseline_test_mse": 84417.19341072753,
+  "diagnostics": {
+    "target_quantiles": {
+      "0": 1.0,
+      "0.5": 6.0,
+      "0.9": 24.0,
+      "0.99": 120.0,
+      "1": 80995.0
+    },
+    "test_max": 80995.0,
+    "top10_squared_error_fraction": {
+      "target": 0.9924072181522202,
+      "embedding": 0.993211353307081,
+      "combined": 0.9927793772803087
+    }
+  }
+}

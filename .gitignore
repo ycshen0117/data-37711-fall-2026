@@ -1,0 +1,11 @@
+.DS_Store
+**/.venv/
+**/__pycache__/
+*.py[cod]
+**/data/
+**/results/mplconfig/
+**/results/*_weights.pt
+**/results/*_splits.npz
+**/results/*_test_predictions.csv
+.env
+.env.*
