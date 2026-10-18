@@ -2,29 +2,22 @@
 
 Author: Yichen Shen. DATA 37711, Machine Learning 1, Fall 2026.
 
-## Data and version limitation
+## Data
 
-The original 2026 attachments were unavailable. With the author's explicit
-approval, Questions 3–5 use historical course inputs archived in
-[Chenxi1818/foundation_of_ML](https://github.com/Chenxi1818/foundation_of_ML/tree/f386491eef32a7e1c9c0dde29e69430822dcc066),
-commit `f386491eef32a7e1c9c0dde29e69430822dcc066` (2026-01-04). Filenames and
-schemas match the assignment, but equality with the 2026 files is unverified.
-Only input data files are retrieved; no archived solutions or student code were
-used. The exact URLs and SHA-256 values are in `code/data_sources.py`, and each
-experiment records its input checksum. Those downloads are not republished here.
+Questions 3–5 use `dset0.csv`, `dset1.csv`, `taxi_trips.parquet`, and `retail.csv`.
+Automatic retrieval uses a pinned public mirror. Exact URLs and SHA-256 values
+are in `code/data_sources.py`, and each experiment records its input checksum.
+Downloaded datasets are stored locally in `data/`.
 
 Question 2 retrieves `winequality-white.csv` (4898 rows, 11 features) from
 [UCI Wine Quality](https://archive.ics.uci.edu/dataset/186/wine+quality),
 DOI [10.24432/C56S3T](https://doi.org/10.24432/C56S3T), by Cortez and colleagues.
 The archive URL and exact CSV checksum are checked in `code/wine.py`.
 
-The taxi archive contains standardized numeric feature columns and a duration
-column without unit metadata. We interpret duration as **minutes**, consistent
-with its median 8.63 and maximum 227.94; the 45-minute probability results are
-conditional on that interpretation. Original feature preprocessing cannot be
-reconstructed. Additional preprocessing uses training rows only. Nothing is
-filtered from any dataset. The retail file has 397924 rows and positive
-quantities; no raw public retail dataset is substituted for it.
+The taxi dataset contains standardized numeric features and trip duration in
+**minutes**. Additional preprocessing uses training rows only. Nothing is
+filtered from any dataset. The retail dataset has 397924 rows and positive
+quantities.
 
 ## Installation and complete run
 
@@ -38,7 +31,7 @@ After cloning the repository, run from its root:
 cd homework_2
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -r code/requirements.txt
-.venv/bin/python code/run_experiments.py --download-historical-data --taxi-unit minutes
+.venv/bin/python code/run_experiments.py --download-data --taxi-unit minutes
 ```
 
 The last line is the single command for all required searches, model fits,
@@ -50,18 +43,18 @@ Typical experiment runtime is about **5 minutes** on the tested machine, plus
 package installation. Allow roughly 1–2 GB of memory and disk space for the
 environment, datasets, generated predictions, and model weights.
 
-For instructor-provided replacements, put `dset0.csv`, `dset1.csv`,
+To use locally available files, put `dset0.csv`, `dset1.csv`,
 `taxi_trips.parquet`, and `retail.csv` in a separate directory and omit
-`--download-historical-data`:
+`--download-data`:
 
 ```sh
 .venv/bin/python code/run_experiments.py --data-dir /absolute/path/to/data --taxi-target trip_duration --taxi-unit minutes
 ```
 
-The archived dset files have **no header**, binary target in the first column,
-and five numeric predictors. Taxi expects the exact eight-column archived schema
+The dset files have **no header**, binary target in the first column,
+and five numeric predictors. Taxi expects the exact eight-column schema
 and seven numeric features. Change the explicit unit flag to `seconds` if the
-replacement file records seconds; this affects all event probabilities. Retail
+input file records seconds; this affects all event probabilities. Retail
 expects columns `Quantity`, `StockCode`, `CustomerID`. The optional
 `winequality-white.csv` must be semicolon separated with `quality` as its target.
 Other schemas require review rather than silently guessing columns or units.

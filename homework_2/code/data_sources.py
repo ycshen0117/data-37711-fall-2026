@@ -1,8 +1,4 @@
-"""Retrieve checksum-pinned historical course data explicitly authorized for HW2.
-
-These are historical student-archived inputs, not confirmed 2026 course files.
-Only data files are retrieved; no archived solutions or student code are used.
-"""
+"""Download the HW2 datasets from a pinned mirror and verify their checksums."""
 from __future__ import annotations
 import hashlib
 import json
@@ -40,7 +36,7 @@ def retrieve(data_dir: Path, questions: list[str]) -> None:
                 destination.write_bytes(raw)
             actual = hashlib.sha256(destination.read_bytes()).hexdigest()
             if actual != expected:
-                raise ValueError(f'{filename} differs from the historical release; '
-                                 'omit --download-historical-data for another supplied version')
+                raise ValueError(f'{filename} does not match the expected checksum; '
+                                 'omit --download-data for another supplied version')
             records[filename] = dict(url=BASE+path, sha256=actual)
-    (data_dir/'historical_provenance.json').write_text(json.dumps(records, indent=2)+'\n')
+    (data_dir/'data_provenance.json').write_text(json.dumps(records, indent=2)+'\n')

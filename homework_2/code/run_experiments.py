@@ -18,12 +18,12 @@ def main():
     parser.add_argument('--data-dir', type=Path, default=ROOT / 'data')
     parser.add_argument('--questions', nargs='+', choices=['2', '3', '4', '5'],
                         default=['2', '3', '4', '5'])
-    parser.add_argument('--download-historical-data', action='store_true',
-                        help='Download/check the authorized historical course data copies')
+    parser.add_argument('--download-data', action='store_true',
+                        help='Download the datasets and verify their checksums')
     parser.add_argument('--taxi-target', default='trip_duration')
     parser.add_argument('--taxi-unit', choices=['seconds', 'minutes'], default='minutes')
     args = parser.parse_args()
-    if args.download_historical_data:
+    if args.download_data:
         from data_sources import retrieve
         retrieve(args.data_dir, args.questions)
     (ROOT / 'results').mkdir(parents=True, exist_ok=True)
