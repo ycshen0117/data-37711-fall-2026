@@ -109,6 +109,8 @@ def sweep_plots(records, name, xlabel):
         fig, ax = plt.subplots(figsize=(4.8, 2.8))
         ax.plot([r['parameter'] for r in records], [r[group+'_mse'] for r in records], 'o-')
         ax.set(xscale='log', yscale='log', xlabel=xlabel, ylabel=group.title()+' MSE')
+        ax.set_xticks([r['parameter'] for r in records], labels=[f"{r['parameter']:g}" for r in records])
+        ax.xaxis.set_minor_locator(plt.NullLocator())
         ax.grid(alpha=.2)
         fig.tight_layout(); fig.savefig(ROOT/'figures'/f'{name}_{group}_sweep.pdf'); plt.close(fig)
 
