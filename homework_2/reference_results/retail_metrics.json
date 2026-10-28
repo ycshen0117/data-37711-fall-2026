@@ -1,0 +1,145 @@
+{
+  "filename": "retail.csv",
+  "sha256": "5da6724e4ee820f19e1bdb5076fd24355a10f8e75159062824c85f17ea052597",
+  "rows": 397924,
+  "seed": 37711,
+  "cardinality": {
+    "StockCode": 3665,
+    "CustomerID": 4339
+  },
+  "training_cardinality": {
+    "StockCode": 3604,
+    "CustomerID": 4312
+  },
+  "splits": {
+    "train": 278546,
+    "validation": 39792,
+    "test": 79586
+  },
+  "target_quantiles": {
+    "0": 1.0,
+    "0.5": 6.0,
+    "0.9": 24.0,
+    "0.99": 120.0,
+    "1": 80995.0
+  },
+  "dense_onehot_float32_gib": 11.734539210796356,
+  "sparse_onehot_nonzeros": 795848,
+  "embedding_dimensions": [
+    16,
+    16
+  ],
+  "target_encoding": "5-fold out-of-fold raw Quantity means; log1p then training standardization; train-only evaluation map",
+  "loss": "MSE on training-standardized log1p(Quantity), equivalent to MSLE up to fixed scale",
+  "prediction": "expm1 predicted log1p target, clipped at zero; estimates log-scale conditional location, not raw conditional mean",
+  "unknown_test_fraction": {
+    "StockCode": 0.0007915965119493378,
+    "CustomerID": 0.0003015605759807001
+  },
+  "models": {
+    "target": {
+      "training": {
+        "best_epoch": 24,
+        "epochs_run": 39,
+        "best_validation_loss": 0.38553041219711304,
+        "batch_size": 1024,
+        "learning_rate": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0.0001,
+        "patience": 15
+      },
+      "validation": {
+        "msle": 0.38776862197434386,
+        "mse": 139354.91675630622,
+        "mae": 8.866753679708864,
+        "r2": 0.004706004707272005
+      },
+      "test": {
+        "msle": 0.38669555935718014,
+        "mse": 84502.22606941883,
+        "mae": 8.101447657847531,
+        "r2": -0.0010168920216031552
+      }
+    },
+    "embedding": {
+      "training": {
+        "best_epoch": 33,
+        "epochs_run": 48,
+        "best_validation_loss": 0.27225664258003235,
+        "batch_size": 1024,
+        "learning_rate": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0.0001,
+        "patience": 15
+      },
+      "validation": {
+        "msle": 0.27383723817439354,
+        "mse": 139374.40874172054,
+        "mae": 7.95460779414194,
+        "r2": 0.004566789984958852
+      },
+      "test": {
+        "msle": 0.2796701183483854,
+        "mse": 83501.46296602381,
+        "mae": 7.011158962932856,
+        "r2": 0.010838189412433974
+      }
+    },
+    "combined": {
+      "training": {
+        "best_epoch": 18,
+        "epochs_run": 33,
+        "best_validation_loss": 0.26678234338760376,
+        "batch_size": 1024,
+        "learning_rate": 0.001,
+        "optimizer": "Adam",
+        "weight_decay": 0.0001,
+        "patience": 15
+      },
+      "validation": {
+        "msle": 0.2683311553604743,
+        "mse": 139295.48398127337,
+        "mae": 7.760208257505274,
+        "r2": 0.005130482619430832
+      },
+      "test": {
+        "msle": 0.27202708450360935,
+        "mse": 83530.6478350984,
+        "mae": 6.868969545979382,
+        "r2": 0.010492464236968257
+      }
+    }
+  },
+  "baselines": {
+    "log_constant": {
+      "prediction": 5.814203851785115,
+      "validation": {
+        "msle": 1.004488454383476,
+        "mse": 140088.15943090423,
+        "mae": 12.207440310563234,
+        "r2": -0.000530925916395697
+      },
+      "test": {
+        "msle": 1.0024478399024006,
+        "mse": 84476.45153392221,
+        "mae": 11.366602620888811,
+        "r2": -0.0007115657998426617
+      }
+    },
+    "raw_mean": {
+      "prediction": 12.664719651332275,
+      "validation": {
+        "msle": 1.488131143023032,
+        "mse": 140016.96022631813,
+        "mae": 14.266787017130609,
+        "r2": -2.2410376049997183e-05
+      },
+      "test": {
+        "msle": 1.4955275387945148,
+        "mse": 84417.19341072753,
+        "mae": 13.452902960170343,
+        "r2": -9.591602634584362e-06
+      }
+    }
+  }
+}

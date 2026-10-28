@@ -1,8 +1,4 @@
-"""Q3-Q5 experiments using the exact instructor-supplied files.
-
-No replacement data are synthesized. Missing files or unsupported schemas fail
-explicitly. Taxi durations must have their units confirmed before execution.
-"""
+"""Corrected Q1-Q2 experiments using the verified instructor data."""
 from __future__ import annotations
 
 import copy
@@ -18,10 +14,9 @@ import numpy as np
 import pandas as pd
 import torch
 from scipy.special import ndtr
-from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import Ridge
-from sklearn.metrics import accuracy_score, log_loss, mean_squared_error, r2_score
+from sklearn.metrics import log_loss, mean_squared_error, r2_score
 from sklearn.model_selection import KFold, train_test_split
 from sklearn.preprocessing import StandardScaler
 from torch import nn
@@ -46,52 +41,6 @@ def split(n, label):
     va, te = train_test_split(rest, test_size=2/3, random_state=SEED)
     np.savez(ROOT/'results'/f'{label}_splits.npz', train=tr, validation=va, test=te)
     return tr, va, te
-
-
-def boosting(data_dir):
-    answers = {}
-    for name in ['dset0', 'dset1']:
-        path = data_dir / (name+'.csv')
-        frame = pd.read_csv(path, header=None)
-        if frame.isna().any().any():
-            raise ValueError(f'{path}: missing values require an explicit policy')
-        y, X = frame.iloc[:, 0].to_numpy(), frame.iloc[:, 1:].to_numpy(dtype=float)
-        if X.shape[1] == 0:
-            raise ValueError('Expected target in first column and covariates after it')
-        tr, te = train_test_split(np.arange(len(y)), test_size=.2, random_state=SEED)
-        np.savez(ROOT/'results'/f'{name}_splits.npz', train=tr, test=te)
-        classification = len(np.unique(y)) == 2
-        model_cls = GradientBoostingClassifier if classification else GradientBoostingRegressor
-        records, pred = [], pd.DataFrame(dict(row=te, observed=y[te]))
-        for count in [1, 10, 100, 300, 1000]:
-            model = model_cls(n_estimators=count, learning_rate=.1, max_depth=3,
-                              random_state=SEED, subsample=1.)
-            model.fit(X[tr], y[tr])
-            row = dict(trees=count)
-            for label, ix in [('train', tr), ('test', te)]:
-                if classification:
-                    row[label+'_loss'] = float(log_loss(y[ix], model.predict_proba(X[ix]),
-                                                        labels=model.classes_))
-                    row[label+'_accuracy'] = float(accuracy_score(y[ix], model.predict(X[ix])))
-                else:
-                    row[label+'_loss'] = float(mean_squared_error(y[ix], model.predict(X[ix])))
-            records.append(row)
-            pred[str(count)] = model.predict(X[te])
-        pred.to_csv(ROOT/'results'/f'{name}_test_predictions.csv', index=False)
-        answers[name] = dict(**provenance(path), rows=len(y), features=X.shape[1],
-                             task='binary classification' if classification else 'regression',
-                             seed=SEED, train_size=len(tr), test_size=len(te),
-                             learning_rate=.1, max_depth=3, records=records)
-        fig, ax = plt.subplots(figsize=(5.5, 3.2))
-        for label in ['train', 'test']:
-            ax.plot([r['trees'] for r in records], [r[label+'_loss'] for r in records],
-                    'o-', label=label)
-        ax.set(xscale='log', xlabel='Number of trees',
-               ylabel='Log loss' if classification else 'MSE', title=name)
-        ax.legend(); fig.tight_layout(); fig.savefig(ROOT/'figures'/f'{name}.pdf')
-        plt.close(fig)
-    save('boosting_metrics', answers)
-    return answers
 
 
 class Dense(nn.Module):
@@ -154,17 +103,6 @@ def plot_history(history, label):
     ax.set(xlabel='Epoch', ylabel='Standardized training objective', title=label)
     ax.legend(); fig.tight_layout()
     fig.savefig(ROOT/'figures'/f'{label}_learning.pdf'); plt.close(fig)
-
-
-def retail_diagnostics(y, te, predictions):
-    test_y = y[te]
-    details = dict(target_quantiles={str(q):float(np.quantile(y,q))
-                                    for q in [0,.5,.9,.99,1]},
-                   test_max=float(test_y.max()), top10_squared_error_fraction={})
-    for mode in ['target','embedding','combined']:
-        errors = (test_y-predictions[mode].to_numpy())**2
-        details['top10_squared_error_fraction'][mode] = float(np.sort(errors)[-10:].sum()/errors.sum())
-    return details
 
 
 def gaussian_loss(output, y):
@@ -273,10 +211,12 @@ class RetailNet(nn.Module):
 def retail(data_dir):
     path = data_dir/'retail.csv'
     frame = pd.read_csv(path, dtype={'StockCode':str, 'CustomerID':str})
-    X = frame[['StockCode','CustomerID']].fillna('<missing>')
+    if list(frame.columns) != ['Quantity', 'StockCode', 'CustomerID'] or frame.isna().any().any():
+        raise ValueError('Expected complete Quantity, StockCode, CustomerID data')
+    X = frame[['StockCode','CustomerID']]
     y = frame['Quantity'].to_numpy(dtype=float)
-    if not np.isfinite(y).all():
-        raise ValueError('Quantity contains nonfinite values')
+    if not np.isfinite(y).all() or (y <= 0).any():
+        raise ValueError('Quantity must be finite and positive')
     tr, va, te = split(len(y), 'retail')
     ids = np.zeros((len(y), 2), dtype='int64')
     cards, maps = [], {}
@@ -285,66 +225,58 @@ def retail(data_dir):
         mapping = {c:i+1 for i,c in enumerate(categories)}
         ids[:,j] = X[col].map(mapping).fillna(0).to_numpy(dtype='int64')
         cards.append(len(categories)); maps[col] = mapping
+    # The encoding is the mean of raw Quantity, as requested, not mean(log Quantity).
     means = target_means(X.iloc[tr], y[tr], X)
     for fit, held in KFold(5, shuffle=True, random_state=SEED).split(tr):
         means[tr[held]] = target_means(X.iloc[tr[fit]], y[tr[fit]], X.iloc[tr[held]])
+    means = np.log1p(means)
     feature_scaler = StandardScaler().fit(means[tr])
     means = feature_scaler.transform(means).astype('float32')
-    center, scale = float(y[tr].mean()), float(y[tr].std())
-    if scale <= 0:
-        raise ValueError('Training target has zero variance')
-    yz = ((y-center)/scale).astype('float32')
+    logy = np.log1p(y)
+    center, scale = float(logy[tr].mean()), float(logy[tr].std())
+    yz = ((logy-center)/scale).astype('float32')
     answer = dict(**provenance(path), rows=len(y), seed=SEED,
                   cardinality={c:int(X[c].nunique()) for c in X},
                   training_cardinality=dict(zip(X.columns, cards)),
                   splits=dict(train=len(tr), validation=len(va), test=len(te)),
-                  negative_quantity_count=int((y<0).sum()),
+                  target_quantiles={str(q):float(np.quantile(y,q)) for q in [0,.5,.9,.99,1]},
                   dense_onehot_float32_gib=len(y)*sum(cards)*4/1024**3,
                   sparse_onehot_nonzeros=2*len(y), embedding_dimensions=[16,16],
-                  target_encoding='5-fold out-of-fold exact means; train-only evaluation map',
+                  target_encoding='5-fold out-of-fold raw Quantity means; log1p then training standardization; train-only evaluation map',
+                  loss='MSE on training-standardized log1p(Quantity), equivalent to MSLE up to fixed scale',
+                  prediction='expm1 predicted log1p target, clipped at zero; estimates log-scale conditional location, not raw conditional mean',
                   unknown_test_fraction={c:float(np.mean(ids[te,j]==0)) for j,c in enumerate(X)},
-                  models={}, mean_baseline_test_mse=float(np.mean((y[te]-center)**2)))
+                  models={}, baselines={})
+    def scores(pred, ix):
+        return dict(msle=float(np.mean((np.log1p(pred[ix])-logy[ix])**2)),
+                    mse=float(mean_squared_error(y[ix],pred[ix])),
+                    mae=float(np.mean(np.abs(y[ix]-pred[ix]))),
+                    r2=float(r2_score(y[ix],pred[ix])))
+    for name, val in [('log_constant',np.expm1(center)), ('raw_mean',y[tr].mean())]:
+        pred=np.full(len(y),val)
+        answer['baselines'][name] = dict(prediction=float(val), validation=scores(pred,va), test=scores(pred,te))
     predictions = pd.DataFrame(dict(row=te, observed=y[te]))
     for mode in ['target','embedding','combined']:
         torch.manual_seed(SEED)
         model, training = train_network(RetailNet(cards, mode), [ids,means], yz, tr, va,
                                          lambda pred,y: ((pred-y)**2).mean(),
                                          'retail_'+mode, epochs=100)
-        # Batched predictions avoid holding all embedding activations in memory.
         values = []
         with torch.no_grad():
             for start in range(0,len(y),8192):
                 ix = slice(start,start+8192)
                 values.append(model(torch.from_numpy(ids[ix]), torch.from_numpy(means[ix])).numpy())
-        pred = np.concatenate(values)*scale+center
-        answer['models'][mode] = dict(training=training,
-            validation_mse=float(mean_squared_error(y[va],pred[va])),
-            test_mse=float(mean_squared_error(y[te],pred[te])),
-            test_mae=float(np.mean(np.abs(y[te]-pred[te]))),
-            test_r2=float(r2_score(y[te],pred[te])))
+        predlog = np.concatenate(values).astype(float)*scale+center
+        pred = np.maximum(np.expm1(predlog),0.)
+        if not np.isfinite(pred).all():
+            raise FloatingPointError('Nonfinite retail predictions')
+        answer['models'][mode] = dict(training=training, validation=scores(pred,va), test=scores(pred,te))
         predictions[mode] = pred[te]
+        print('Retail',mode,answer['models'][mode],flush=True)
     predictions.to_csv(ROOT/'results/retail_test_predictions.csv', index=False)
-    answer['diagnostics'] = retail_diagnostics(y, te, predictions)
+    # Save the training-only preprocessing needed to apply the restored weights.
+    torch.save(dict(category_maps=maps, feature_mean=feature_scaler.mean_,
+                    feature_scale=feature_scaler.scale_, log_target_mean=center,
+                    log_target_scale=scale),ROOT/'results/retail_preprocessing.pt')
     save('retail_metrics',answer)
-    return answer
-
-
-def run_question(q, data_dir, taxi_target, taxi_unit):
-    torch.set_num_threads(1)
-    torch.use_deterministic_algorithms(True)
-    for d in ['results','figures']:
-        (ROOT/d).mkdir(parents=True,exist_ok=True)
-    required = {'3':['dset0.csv','dset1.csv'],
-                '4':['taxi_trips.parquet'], '5':['retail.csv']}[q]
-    missing = [f for f in required if not (data_dir/f).is_file()]
-    if missing:
-        raise FileNotFoundError('Missing instructor-supplied data: '+', '.join(missing))
-    start = time.perf_counter()
-    if q == '3':
-        answer = boosting(data_dir)
-    elif q == '4':
-        answer = taxi(data_dir, taxi_target, taxi_unit)
-    else:
-        answer = retail(data_dir)
-    print('Question',q,'runtime seconds:',round(time.perf_counter()-start,2),flush=True)
     return answer

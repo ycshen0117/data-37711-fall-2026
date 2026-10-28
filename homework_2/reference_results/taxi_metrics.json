@@ -1,0 +1,97 @@
+{
+  "filename": "taxi_trips.parquet",
+  "sha256": "6a713446584efe41bb161f77f068331b964a04c84abd3b69164bc2bdb585e3dc",
+  "rows": 523554,
+  "seed": 37711,
+  "target": "trip_duration",
+  "input_unit": "minutes",
+  "reported_unit": "minutes",
+  "features": [
+    "pickup_longitude",
+    "pickup_latitude",
+    "dropoff_longitude",
+    "dropoff_latitude",
+    "min_of_day",
+    "day_of_week",
+    "day_of_year"
+  ],
+  "splits": {
+    "train": 366487,
+    "validation": 52355,
+    "test": 104712
+  },
+  "architecture": [
+    7,
+    64,
+    64,
+    2
+  ],
+  "training": {
+    "best_epoch": 115,
+    "epochs_run": 130,
+    "best_validation_loss": 0.5476130843162537,
+    "batch_size": 1024,
+    "learning_rate": 0.001,
+    "optimizer": "Adam",
+    "weight_decay": 0.0001,
+    "patience": 15
+  },
+  "models": {
+    "constant": {
+      "validation": {
+        "mse": 60.63151998190825,
+        "gaussian_nll": 3.471376339452141,
+        "accuracy": 0.995855219176774,
+        "brier": 0.00414474813530448,
+        "event_log_loss": 0.051577544259549336,
+        "coverage90": 0.9400821316015663
+      },
+      "test": {
+        "mse": 60.42370488883849,
+        "gaussian_nll": 3.4696436294083295,
+        "accuracy": 0.9954350981740393,
+        "brier": 0.004564865823166358,
+        "event_log_loss": 0.056805119153697986,
+        "coverage90": 0.9401405760562305
+      }
+    },
+    "ridge": {
+      "validation": {
+        "mse": 57.120681580522465,
+        "gaussian_nll": 3.441534558284672,
+        "accuracy": 0.995855219176774,
+        "brier": 0.004143184692199487,
+        "event_log_loss": 0.04198236185085133,
+        "coverage90": 0.9357463470537676
+      },
+      "test": {
+        "mse": 57.29523383660517,
+        "gaussian_nll": 3.4430734852836693,
+        "accuracy": 0.9954350981740393,
+        "brier": 0.004566386228148028,
+        "event_log_loss": 0.04740074262815025,
+        "coverage90": 0.9346015738406296
+      }
+    },
+    "heteroscedastic_MLP": {
+      "validation": {
+        "mse": 14.575578872315315,
+        "gaussian_nll": 2.5945205452022697,
+        "accuracy": 0.9966956355648935,
+        "brier": 0.0026814328556893675,
+        "event_log_loss": 0.01401586551219225,
+        "coverage90": 0.9423741762964378
+      },
+      "test": {
+        "mse": 15.118411674329328,
+        "gaussian_nll": 2.6281545390528764,
+        "accuracy": 0.9963041485216594,
+        "brier": 0.003069035390397463,
+        "event_log_loss": 0.016756393015384674,
+        "coverage90": 0.9405130262052105
+      }
+    }
+  },
+  "test_event_prevalence": 0.9954350981740393,
+  "majority_accuracy": 0.9954350981740393
+}

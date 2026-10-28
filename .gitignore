@@ -9,3 +9,6 @@
 **/results/*_test_predictions.csv
 .env
 .env.*
+
+**/results/*_preprocessing.pt
+**/results/*_weights.npz

@@ -1,0 +1,17 @@
+{
+  "train.csv": {
+    "sha256": "becc881f01b6c34450b95036c115f92682fed9fb5e1e48b81bb681f8cf672e8e",
+    "source": "Instructor corrected Canvas attachments supplied by user",
+    "canvas_file_id": 16072496
+  },
+  "val.csv": {
+    "sha256": "2d96164fa2019e8333e93f7a9ba96bfb606ec60b2fa4c485d0b45501753fbac6",
+    "source": "Instructor corrected Canvas attachments supplied by user",
+    "canvas_file_id": 16072497
+  },
+  "test.csv": {
+    "sha256": "3b0f5fe8ae346f5dff4f805de7893ce190f331a2c8871e0f857cf66dcab00857",
+    "source": "Instructor corrected Canvas attachments supplied by user",
+    "canvas_file_id": 16072498
+  }
+}

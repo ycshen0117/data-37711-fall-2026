@@ -6,7 +6,7 @@ Author: Yichen Shen.
 
 | Homework | Code and reproducibility instructions |
 | --- | --- |
-| 2 | [Boosting, model selection, uncertainty, categorical encodings](homework_2/README.md) |
+| 2 | [Corrected: taxi uncertainty, retail encodings, RKS and MLP](homework_2/README.md) |
 
 See the homework README for dataset retrieval, exact dependencies, execution,
 and representative results.
