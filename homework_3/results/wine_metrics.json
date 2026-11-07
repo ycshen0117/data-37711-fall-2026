@@ -1,0 +1,29 @@
+{
+  "split_sizes": {
+    "train": 3428,
+    "validation": 490,
+    "test": 980
+  },
+  "test_train_mean_mse": 0.7202610826452961,
+  "forest": {
+    "configurations": 512,
+    "parameters": {
+      "n_estimators": 128,
+      "max_depth": null,
+      "min_samples_leaf": 1,
+      "max_features": 0.3
+    },
+    "validation_mse": 0.40142510861766584,
+    "test_mse": 0.3212297712053571
+  },
+  "neighbors": {
+    "configurations": 512,
+    "parameters": {
+      "n_neighbors": 15,
+      "weights": "distance",
+      "p": 2
+    },
+    "validation_mse": 0.4208802882088568,
+    "test_mse": 0.3494689103028985
+  }
+}
